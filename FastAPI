@@ -1,0 +1,27 @@
+pip install fastapi
+
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello, FastAPI!"}
+
+uvicorn app:app --reload
+
+from typing import Optional
+
+@app.get("/items/")
+def read_item(item_id: int, query_param: Optional[str] = None):
+    return {"item_id": item_id, "query_param": query_param}
+
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    description: str
+
+@app.post("/items/")
+def create_item(item: Item):
+    return {"name": item.name, "description": item.description}

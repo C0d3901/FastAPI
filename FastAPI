@@ -4,24 +4,41 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"message": "Hello, FastAPI!"}
+@app.post("/upload-image")
+async def upload_image(file: UploadFile = File(...)):
+    # Process the uploaded image (save, analyze, etc.)
+    # Return analysis result or success message
+    return {"message": "Image uploaded and analyzed"}
 
-uvicorn main:app --reload
+@app.post("/chatbot-interaction")
+async def chatbot_interaction(user_input: str):
+    # Use GPT chatbot to generate a response
+    response = generate_response(user_input)
+    return {"response": response}
 
-from typing import Optional
+uvicorn app:app --host 0.0.0.0 --port 8000
 
-@app.get("/items/")
-def read_item(item_id: int, query_param: Optional[str] = None):
-    return {"item_id": item_id, "query_param": query_param}
+import axios from 'axios';
 
-from pydantic import BaseModel
+const uploadImage = async (imageFile) => {
+    const formData = new FormData();
+    formData.append('file', imageFile);
 
-class Item(BaseModel):
-    name: str
-    description: str
+    const response = await axios.post('/upload-image', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
 
-@app.post("/items/")
-def create_item(item: Item):
-    return {"name": item.name, "description": item.description}
+    return response.data;
+};
+
+const chatbotInteraction = async (userInput) => {
+    const response = await axios.post('/chatbot-interaction', {
+        user_input: userInput,
+    });
+
+    return response.data;
+};
+
+npm run dev
